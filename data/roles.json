@@ -1,0 +1,76 @@
+{
+  "roles": [
+    {
+      "id": "voter",
+      "title": "The Voter",
+      "icon": "person",
+      "color": "blue",
+      "description": "Every eligible citizen is a voter. Voters are the foundation of democracy.",
+      "responsibilities": [
+        "Register before the deadline",
+        "Stay informed about candidates and policies",
+        "Cast your ballot on voting day",
+        "Hold elected officials accountable"
+      ],
+      "rights": [
+        "Secret ballot — no one can see how you voted",
+        "Right to vote without intimidation",
+        "Right to accessible polling stations",
+        "Right to assistance if needed"
+      ]
+    },
+    {
+      "id": "candidate",
+      "title": "The Candidate",
+      "icon": "record_voice_over",
+      "color": "amber",
+      "description": "Individuals who formally contest the election and seek to represent voters.",
+      "responsibilities": [
+        "File nomination with required documents",
+        "Campaign within legal spending limits",
+        "Participate in debates honestly",
+        "Accept results of the democratic process"
+      ],
+      "rights": [
+        "Right to campaign freely",
+        "Right to have agents observe counting",
+        "Right to challenge results through legal means"
+      ]
+    },
+    {
+      "id": "election_commission",
+      "title": "Election Commission",
+      "icon": "account_balance",
+      "color": "green",
+      "description": "The independent body that administers, supervises and ensures the election is free and fair.",
+      "responsibilities": [
+        "Set and publish election schedule",
+        "Maintain and update voter rolls",
+        "Train and deploy polling officers",
+        "Enforce campaign finance rules",
+        "Announce official results"
+      ],
+      "rights": [
+        "Authority to disqualify rule-breaking candidates",
+        "Power to postpone elections in emergencies"
+      ]
+    },
+    {
+      "id": "observer",
+      "title": "Election Observer",
+      "icon": "visibility",
+      "color": "purple",
+      "description": "Independent monitors who watch the process to ensure it is conducted fairly and transparently.",
+      "responsibilities": [
+        "Monitor polling stations on voting day",
+        "Observe vote counting process",
+        "Report irregularities to authorities",
+        "Publish independent assessment reports"
+      ],
+      "rights": [
+        "Right to access all stages of the process",
+        "Right to publish findings independently"
+      ]
+    }
+  ]
+}

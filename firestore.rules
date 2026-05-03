@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Quiz scores - anyone can read, authenticated write
+    match /quiz_scores/{docId} {
+      allow read: true;
+      allow create: if true;
+      allow update, delete: if false;
+    }
+    // Chat sessions - session owner only
+    match /chat_sessions/{sessionId} {
+      allow read, write: if true;
+    }
+    // Analytics events - write only
+    match /analytics/{docId} {
+      allow read: if false;
+      allow create: if true;
+    }
+  }
+}

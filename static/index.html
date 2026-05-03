@@ -1,0 +1,391 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>VoteGuide — Election Education Assistant</title>
+<meta name="description" content="Understand every step of the democratic election process interactively">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script type="module">
+  import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import{getFirestore,collection,addDoc,getDocs,query,orderBy,limit,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  const app=initializeApp({apiKey:"AIzaSyDtZqp4glOZy1wDt827oQvR5c5cEkCo77c",authDomain:"voteguide-df047.firebaseapp.com",projectId:"voteguide-df047",storageBucket:"voteguide-df047.firebasestorage.app",messagingSenderId:"617691397503",appId:"1:617691397503:web:15a8a4e63227783a5b2e4a"});
+  const db=getFirestore(app);
+  window._db=db;window._fb={collection,addDoc,getDocs,query,orderBy,limit,serverTimestamp};
+  window.dispatchEvent(new Event('firebase-ready'));
+</script>
+<style>
+:root{--bg:#0a0f1e;--card:#131929;--border:#1e2a45;--blue:#4a90e2;--green:#2ecc71;--amber:#f39c12;--purple:#9b59b6;--red:#e74c3c;--text:#e8eaf0;--text-muted:#8892a4;--font:'Inter',sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;}
+.skip-link{position:absolute;left:-9999px;top:0;background:var(--blue);color:#fff;padding:8px 16px;z-index:9999;border-radius:0 0 8px 0;text-decoration:none;}.skip-link:focus{left:0;}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
+header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.logo h1{font-size:1.4rem;font-weight:700;color:var(--blue);}.logo span{font-size:.75rem;color:var(--text-muted);}
+.lang-wrap{display:flex;align-items:center;gap:8px;}.lang-wrap label{font-size:.85rem;color:var(--text-muted);}
+#lang-select{background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-family:var(--font);font-size:.85rem;cursor:pointer;}
+#lang-select:focus{outline:2px solid var(--blue);outline-offset:2px;}
+nav{background:var(--card);border-bottom:1px solid var(--border);padding:0 24px;}
+[role="tablist"]{display:flex;gap:4px;overflow-x:auto;}
+[role="tab"]{background:none;border:none;color:var(--text-muted);padding:14px 18px;cursor:pointer;font-family:var(--font);font-size:.9rem;font-weight:500;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;}
+[role="tab"]:hover{color:var(--text);}[role="tab"][aria-selected="true"]{color:var(--blue);border-bottom-color:var(--blue);}[role="tab"]:focus{outline:2px solid var(--blue);outline-offset:-2px;}
+.layout{display:grid;grid-template-columns:60% 40%;min-height:calc(100vh - 110px);}
+.content-area{padding:24px;overflow-y:auto;}
+.chat-area{border-left:1px solid var(--border);display:flex;flex-direction:column;height:calc(100vh - 110px);position:sticky;top:110px;}
+[role="tabpanel"]{animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.section-title{font-size:1.5rem;font-weight:700;margin-bottom:4px;}.section-sub{color:var(--text-muted);font-size:.9rem;margin-bottom:24px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:transform .2s,box-shadow .2s;}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.card.highlighted{border-color:var(--blue);box-shadow:0 0 0 3px rgba(74,144,226,.35);animation:pulse 1s ease;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(74,144,226,.35);}50%{box-shadow:0 0 0 6px rgba(74,144,226,.15);}}
+.card-strip{height:5px;}.card-body{padding:16px;}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.card-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.stage-num{font-size:.7rem;font-weight:700;color:var(--text-muted);}.card-title{font-size:1rem;font-weight:600;}
+.duration-chip{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.06);border-radius:20px;padding:3px 10px;font-size:.75rem;color:var(--text-muted);margin-bottom:8px;}
+.card-desc{font-size:.85rem;color:var(--text-muted);line-height:1.5;margin-bottom:10px;}
+.pills{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;}.pill{background:rgba(255,255,255,.07);border-radius:20px;padding:2px 8px;font-size:.72rem;color:var(--text-muted);}
+.btn-expand{background:none;border:1px solid var(--border);color:var(--blue);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:.82rem;font-family:var(--font);transition:all .2s;width:100%;}
+.btn-expand:hover{background:rgba(74,144,226,.12);}.btn-expand:focus{outline:2px solid var(--blue);}
+.stage-detail{display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:12px;}.stage-detail.open{display:block;}
+.stage-detail ul{padding-left:18px;color:var(--text-muted);font-size:.85rem;line-height:1.7;}
+.citizen-box{background:rgba(46,204,113,.1);border-left:3px solid var(--green);border-radius:6px;padding:10px 12px;margin-top:10px;font-size:.85rem;}
+.citizen-box strong{color:var(--green);display:block;margin-bottom:4px;}
+.stages-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.timeline-scroll{overflow-x:auto;padding-bottom:16px;}
+.timeline-track{display:flex;align-items:flex-start;gap:0;min-width:700px;position:relative;padding:20px 0;}
+.timeline-track::before{content:'';position:absolute;top:36px;left:36px;right:36px;height:2px;background:var(--border);}
+.t-node{display:flex;flex-direction:column;align-items:center;flex:1;cursor:pointer;position:relative;}
+.t-circle{width:48px;height:48px;border-radius:50%;border:3px solid var(--bg);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:#fff;z-index:1;transition:transform .2s;box-shadow:0 0 0 4px var(--bg);}
+.t-node:hover .t-circle{transform:scale(1.15);}
+.t-label{font-size:.75rem;font-weight:600;margin-top:8px;text-align:center;}.t-dur{font-size:.65rem;color:var(--text-muted);text-align:center;margin-top:2px;}
+.t-tooltip{display:none;position:absolute;top:70px;left:50%;transform:translateX(-50%);background:#1a2540;border:1px solid var(--border);border-radius:10px;padding:12px;width:200px;z-index:200;font-size:.8rem;line-height:1.5;box-shadow:0 8px 24px rgba(0,0,0,.5);}
+.t-node:hover .t-tooltip,.t-node:focus .t-tooltip{display:block;}.t-tooltip strong{color:var(--blue);display:block;margin-bottom:4px;}
+.roles-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.role-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.role-top{padding:16px;display:flex;align-items:center;gap:12px;}.role-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.role-title{font-size:1rem;font-weight:600;}.role-body{padding:0 16px 16px;}
+.role-desc{font-size:.85rem;color:var(--text-muted);margin-bottom:12px;line-height:1.5;}
+.role-section h4{font-size:.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;}
+.role-section ul{padding-left:16px;font-size:.83rem;color:var(--text-muted);line-height:1.7;margin-bottom:12px;}
+.glossary-search-wrap{position:relative;margin-bottom:16px;}
+#glossary-search{width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 14px 10px 38px;font-family:var(--font);font-size:.9rem;}
+#glossary-search:focus{outline:2px solid var(--blue);}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:1.1rem;}
+.alpha-nav{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:16px;}
+.alpha-btn{background:none;border:1px solid var(--border);color:var(--text-muted);border-radius:6px;width:30px;height:30px;font-size:.8rem;cursor:pointer;font-family:var(--font);transition:all .2s;}
+.alpha-btn:hover,.alpha-btn:focus{background:var(--blue);color:#fff;border-color:var(--blue);outline:none;}
+.letter-header{font-size:.8rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;padding:10px 0 4px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+.glossary-term{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.glossary-term dt{font-weight:600;color:var(--blue);font-size:.9rem;margin-bottom:2px;}.glossary-term dd{font-size:.84rem;color:var(--text-muted);line-height:1.5;}
+.progress-wrap{margin-bottom:20px;}.progress-label{display:flex;justify-content:space-between;font-size:.8rem;color:var(--text-muted);margin-bottom:6px;}
+.progress-bar-bg{background:var(--border);border-radius:20px;height:6px;overflow:hidden;}
+.progress-bar-fill{background:linear-gradient(90deg,var(--blue),var(--purple));height:100%;border-radius:20px;transition:width .4s ease;}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;}
+.q-text{font-size:1rem;font-weight:600;margin-bottom:16px;line-height:1.5;}.q-options{display:flex;flex-direction:column;gap:8px;}
+.q-opt{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:12px 14px;cursor:pointer;font-family:var(--font);font-size:.88rem;text-align:left;transition:all .2s;}
+.q-opt:hover:not(:disabled){background:rgba(74,144,226,.15);border-color:var(--blue);}.q-opt:focus{outline:2px solid var(--blue);}
+.q-opt.correct{background:rgba(46,204,113,.18);border-color:var(--green);color:var(--green);}
+.q-opt.wrong{background:rgba(231,76,60,.18);border-color:var(--red);color:var(--red);}.q-opt:disabled{cursor:default;}
+.explanation{background:rgba(74,144,226,.1);border-left:3px solid var(--blue);border-radius:6px;padding:12px;margin-top:14px;font-size:.85rem;color:var(--text-muted);line-height:1.5;display:none;}
+.explanation.open{display:block;}
+.btn-next{margin-top:14px;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:10px 20px;cursor:pointer;font-family:var(--font);font-size:.9rem;font-weight:600;display:none;transition:opacity .2s;}
+.btn-next:hover{opacity:.85;}.btn-next:focus{outline:2px solid #fff;outline-offset:2px;}
+.results{text-align:center;padding:32px 20px;}.score-big{font-size:3rem;font-weight:700;color:var(--blue);}.score-msg{font-size:1.1rem;margin:12px 0 24px;}
+.btn-retry{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:12px 28px;cursor:pointer;font-family:var(--font);font-size:.95rem;font-weight:600;}
+.btn-retry:focus{outline:2px solid #fff;outline-offset:2px;}
+.leaderboard-wrap{margin-top:8px;}
+.lb-title{font-size:1rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.lb-table{width:100%;border-collapse:collapse;font-size:.85rem;}
+.lb-table th{text-align:left;color:var(--text-muted);font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;padding:6px 10px;border-bottom:1px solid var(--border);}
+.lb-table td{padding:10px;border-bottom:1px solid rgba(255,255,255,.04);}
+.lb-rank{font-weight:700;color:var(--text-muted);width:36px;}.lb-rank.gold{color:#f1c40f;}.lb-rank.silver{color:#bdc3c7;}.lb-rank.bronze{color:#e67e22;}
+.lb-pill{display:inline-block;background:rgba(74,144,226,.15);border:1px solid rgba(74,144,226,.3);border-radius:20px;padding:2px 10px;font-weight:600;color:var(--blue);}
+.lb-empty,.lb-loading{text-align:center;color:var(--text-muted);font-size:.85rem;padding:20px;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;width:340px;max-width:90vw;animation:fadeIn .25s ease;}
+.modal-box h3{font-size:1.1rem;font-weight:700;margin-bottom:8px;}.modal-box p{font-size:.85rem;color:var(--text-muted);margin-bottom:16px;}
+.modal-input{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-family:var(--font);font-size:.9rem;margin-bottom:14px;}
+.modal-input:focus{outline:2px solid var(--blue);}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;}
+.btn-cancel{background:none;border:1px solid var(--border);color:var(--text-muted);border-radius:8px;padding:8px 16px;cursor:pointer;font-family:var(--font);}
+.btn-save{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-family:var(--font);font-weight:600;}.btn-save:hover{opacity:.85;}
+.chat-area aside{display:flex;flex-direction:column;height:100%;}
+.chat-header{padding:16px 20px;border-bottom:1px solid var(--border);}.chat-header h2{font-size:1rem;font-weight:700;}.chat-header p{font-size:.78rem;color:var(--text-muted);margin-top:2px;}
+#lang-indicator{font-size:.75rem;color:var(--blue);padding:4px 20px;background:rgba(74,144,226,.08);border-bottom:1px solid var(--border);}
+#chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;}
+.msg{max-width:88%;animation:fadeIn .25s ease;}
+.msg-ai{align-self:flex-start;border-left:3px solid var(--blue);background:var(--card);border-radius:0 10px 10px 0;padding:10px 14px;}
+.msg-user{align-self:flex-end;background:var(--blue);border-radius:10px 10px 0 10px;padding:10px 14px;}
+.msg-meta{font-size:.7rem;color:rgba(255,255,255,.45);margin-top:4px;}.msg-ai .msg-meta{color:var(--text-muted);}
+.msg-text{font-size:.87rem;line-height:1.55;}
+#typing-indicator{padding:10px 20px;display:none;}#typing-indicator.show{display:flex;align-items:center;gap:6px;}
+.dot{width:7px;height:7px;background:var(--blue);border-radius:50%;animation:bounce .8s ease infinite;}.dot:nth-child(2){animation-delay:.15s;}.dot:nth-child(3){animation-delay:.3s;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+#stage-chip{display:none;margin:4px 16px 8px;background:rgba(74,144,226,.13);border:1px solid rgba(74,144,226,.3);border-radius:20px;padding:6px 14px;font-size:.78rem;cursor:pointer;color:var(--blue);transition:background .2s;}
+#stage-chip:hover{background:rgba(74,144,226,.25);}
+.chat-input-area{padding:12px 16px;border-top:1px solid var(--border);}
+#chat-form{display:flex;gap:8px;align-items:flex-end;}
+#chat-input{flex:1;background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 12px;font-family:var(--font);font-size:.88rem;resize:none;line-height:1.4;}
+#chat-input:focus{outline:2px solid var(--blue);}
+#send-btn{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:4px;font-family:var(--font);font-size:.88rem;font-weight:600;white-space:nowrap;transition:opacity .2s;}
+#send-btn:hover{opacity:.85;}#send-btn:focus{outline:2px solid #fff;outline-offset:2px;}#send-btn:disabled{opacity:.5;cursor:default;}
+.color-blue{color:var(--blue);}.color-amber{color:var(--amber);}.color-green{color:var(--green);}.color-purple{color:var(--purple);}.color-red{color:var(--red);}
+.bg-blue{background:rgba(74,144,226,.18);}.bg-amber{background:rgba(243,156,18,.18);}.bg-green{background:rgba(46,204,113,.18);}.bg-purple{background:rgba(155,89,182,.18);}.bg-red{background:rgba(231,76,60,.18);}
+@media(max-width:768px){.layout{grid-template-columns:1fr;height:auto;}.chat-area{height:480px;position:static;border-left:none;border-top:1px solid var(--border);}.stages-grid,.roles-grid{grid-template-columns:1fr;}.timeline-track{min-width:600px;}}
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<header role="banner">
+  <div class="logo"><h1>🗳️ VoteGuide</h1><span>Your Election Education Companion</span></div>
+  <div class="lang-wrap">
+    <label for="lang-select">Language</label>
+    <select id="lang-select" aria-label="Select response language">
+      <option value="en">English</option><option value="hi">हिंदी</option><option value="es">Español</option>
+      <option value="fr">Français</option><option value="ar">العربية</option><option value="bn">বাংলা</option>
+      <option value="zh">中文</option><option value="sw">Swahili</option>
+    </select>
+  </div>
+</header>
+<nav role="navigation" aria-label="Content sections">
+  <div role="tablist">
+    <button role="tab" id="tab-timeline" aria-selected="true" aria-controls="panel-timeline" onclick="switchTab('timeline')">📅 Timeline</button>
+    <button role="tab" id="tab-stages" aria-selected="false" aria-controls="panel-stages" onclick="switchTab('stages')">⚙️ Stages</button>
+    <button role="tab" id="tab-roles" aria-selected="false" aria-controls="panel-roles" onclick="switchTab('roles')">👥 Who Does What</button>
+    <button role="tab" id="tab-glossary" aria-selected="false" aria-controls="panel-glossary" onclick="switchTab('glossary')">📖 Glossary</button>
+    <button role="tab" id="tab-quiz" aria-selected="false" aria-controls="panel-quiz" onclick="switchTab('quiz')">🧠 Quiz</button>
+    <button role="tab" id="tab-leaderboard" aria-selected="false" aria-controls="panel-leaderboard" onclick="switchTab('leaderboard')">🏆 Leaderboard</button>
+  </div>
+</nav>
+<div class="layout">
+  <main id="main-content" class="content-area">
+    <section id="panel-timeline" role="tabpanel" aria-labelledby="tab-timeline">
+      <p class="section-title">Election Process Timeline</p>
+      <p class="section-sub">A typical election unfolds across 8 phases</p>
+      <div class="timeline-scroll"><div class="timeline-track" id="timeline-track"></div></div>
+    </section>
+    <section id="panel-stages" role="tabpanel" aria-labelledby="tab-stages" hidden>
+      <p class="section-title">The 8 Stages of an Election</p>
+      <p class="section-sub">Click any card to explore details and your role as a citizen</p>
+      <div class="stages-grid" id="stages-grid"></div>
+    </section>
+    <section id="panel-roles" role="tabpanel" aria-labelledby="tab-roles" hidden>
+      <p class="section-title">Key Players in an Election</p>
+      <p class="section-sub">Every election involves four essential roles</p>
+      <div class="roles-grid" id="roles-grid"></div>
+    </section>
+    <section id="panel-glossary" role="tabpanel" aria-labelledby="tab-glossary" hidden>
+      <p class="section-title">Election Glossary</p>
+      <p class="section-sub">30+ key election terms explained clearly</p>
+      <div class="glossary-search-wrap">
+        <span class="material-icons search-icon" aria-hidden="true">search</span>
+        <input type="search" id="glossary-search" placeholder="Search terms..." aria-label="Search election glossary" oninput="filterGlossary(this.value)">
+      </div>
+      <nav role="navigation" aria-label="Glossary index" class="alpha-nav" id="alpha-nav"></nav>
+      <div id="glossary-list"></div>
+    </section>
+    <section id="panel-quiz" role="tabpanel" aria-labelledby="tab-quiz" hidden>
+      <p class="section-title">Test Your Knowledge</p>
+      <p class="section-sub">10 questions about the election process</p>
+      <div class="progress-wrap">
+        <div class="progress-label"><span id="q-label">Question 1 of 10</span><span id="score-label">Score: 0</span></div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill" style="width:0%" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="10" aria-label="Quiz progress"></div></div>
+      </div>
+      <div id="quiz-container"></div>
+      <div id="quiz-results" class="results" style="display:none" aria-live="polite"></div>
+    </section>
+    <section id="panel-leaderboard" role="tabpanel" aria-labelledby="tab-leaderboard" hidden>
+      <p class="section-title">🏆 Quiz Leaderboard</p>
+      <p class="section-sub">Top players who mastered the election process</p>
+      <div class="leaderboard-wrap">
+        <div class="lb-title"><span class="material-icons color-amber" aria-hidden="true">emoji_events</span> Top Scores</div>
+        <div id="lb-container"><p class="lb-loading">Loading scores...</p></div>
+      </div>
+    </section>
+  </main>
+  <div class="chat-area">
+    <aside aria-label="AI Chat Assistant">
+      <div class="chat-header"><h2>💬 Ask VoteGuide</h2><p>Ask anything about the election process</p></div>
+      <p id="lang-indicator" aria-live="polite">Responding in: English</p>
+      <div id="chat-messages" role="log" aria-label="Conversation history" aria-live="polite"></div>
+      <div id="typing-indicator" aria-label="VoteGuide is thinking"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      <div id="stage-chip" role="button" tabindex="0"></div>
+      <div class="chat-input-area">
+        <form id="chat-form" onsubmit="return false;" aria-label="Send a message">
+          <textarea id="chat-input" rows="2" aria-label="Ask a question about elections" placeholder="Ask me about the election process..."></textarea>
+          <button id="send-btn" type="button" onclick="sendMessage()" aria-label="Send message">Send <span class="material-icons" aria-hidden="true">send</span></button>
+        </form>
+      </div>
+    </aside>
+  </div>
+</div>
+<div class="modal-overlay" id="score-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-box">
+    <h3 id="modal-title">🏆 Save Your Score</h3>
+    <p>Enter your name to add your score to the leaderboard!</p>
+    <input type="text" id="modal-name" class="modal-input" placeholder="Your name (max 30 chars)" maxlength="30" aria-label="Your name">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeScoreModal()">Skip</button>
+      <button class="btn-save" id="modal-save-btn" onclick="submitScore()">Save Score</button>
+    </div>
+  </div>
+</div>
+<script>
+const SC={1:'blue',2:'blue',3:'amber',4:'amber',5:'green',6:'purple',7:'purple',8:'red'};
+const LN={en:'English',hi:'\u0939\u093f\u0902\u0926\u0940',es:'Espa\u00f1ol',fr:'Fran\u00e7ais',ar:'\u0627\u0644\u0639\u0631\u0628\u064a\u0629',bn:'\u09ac\u09be\u0982\u09b2\u09be',zh:'\u4e2d\u6587',sw:'Swahili'};
+let lang='en',quizQ=[],qIdx=0,score=0,answered=false,glossary=[],stages=[],lastScore=0;
+let _db=null,_fb=null;
+const sid=localStorage.getItem('vg_sid')||(()=>{const s='s_'+Date.now();localStorage.setItem('vg_sid',s);return s;})();
+
+window.addEventListener('firebase-ready',()=>{_db=window._db;_fb=window._fb;loadLeaderboard();restoreChat();});
+
+async function initApp(){
+  await Promise.all([loadTimeline(),loadStages(),loadRoles(),loadGlossary(),loadQuiz()]);
+  addMsg('ai','👋 Welcome to VoteGuide! Ask me anything about the democratic election process — voter registration, voting day, counting, or anything else!',false);
+  switchTab('timeline');
+}
+
+function switchTab(n){
+  document.querySelectorAll('[role="tab"]').forEach(t=>t.setAttribute('aria-selected','false'));
+  document.querySelectorAll('[role="tabpanel"]').forEach(p=>p.hidden=true);
+  document.getElementById('tab-'+n).setAttribute('aria-selected','true');
+  document.getElementById('panel-'+n).hidden=false;
+  if(n==='leaderboard')loadLeaderboard();
+  track('tab',{tab:n});
+}
+
+async function loadTimeline(){
+  try{const d=await(await fetch('/api/timeline')).json();
+  const t=document.getElementById('timeline-track');t.innerHTML='';
+  (d.phases||[]).forEach(p=>{const n=document.createElement('div');n.className='t-node';n.tabIndex=0;n.setAttribute('aria-label',p.label+': '+p.duration);
+  n.innerHTML=`<div class="t-circle bg-${p.color} color-${p.color}" style="border-color:var(--${p.color})">${p.id}</div><div class="t-label">${p.label}</div><div class="t-dur">${p.duration}</div><div class="t-tooltip"><strong>${p.label}</strong>${p.duration}</div>`;
+  t.appendChild(n);});}catch(e){console.error(e);}
+}
+
+async function loadStages(){
+  try{const d=await(await fetch('/api/stages')).json();stages=d.stages||[];renderStages();}catch(e){console.error(e);}
+}
+
+function renderStages(){
+  const g=document.getElementById('stages-grid');g.innerHTML='';
+  stages.forEach(s=>{const c=SC[s.id]||'blue';const el=document.createElement('div');el.className='card';el.dataset.stageId=s.id;
+  const pills=(s.who_is_involved||[]).map(w=>`<span class="pill">${w}</span>`).join('');
+  const acts=(s.key_actions||[]).map(a=>`<li>${a}</li>`).join('');
+  el.innerHTML=`<div class="card-strip" style="background:var(--${c})"></div><div class="card-body"><div class="card-header"><div class="card-icon bg-${c}"><span class="material-icons color-${c}" aria-hidden="true">${s.icon}</span></div><div><div class="stage-num">STAGE ${s.id}</div><div class="card-title">${s.name}</div></div></div><div class="duration-chip"><span class="material-icons" style="font-size:.85rem" aria-hidden="true">schedule</span>${s.duration}</div><div class="card-desc">${s.description}</div><div class="pills">${pills}</div><button class="btn-expand" aria-expanded="false" onclick="toggleStage(${s.id},this)">Show Details</button><div class="stage-detail" id="detail-${s.id}"><ul>${acts}</ul><div class="citizen-box"><strong>✅ Your Role</strong>${s.citizen_action}</div></div></div>`;
+  el.querySelector('.btn-expand').addEventListener('click',()=>track('stage',{id:s.id}));
+  g.appendChild(el);});
+}
+
+function toggleStage(id,btn){const d=document.getElementById('detail-'+id);const o=d.classList.toggle('open');btn.setAttribute('aria-expanded',o);btn.textContent=o?'Hide Details':'Show Details';}
+
+async function loadRoles(){
+  try{const d=await(await fetch('/api/roles')).json();const g=document.getElementById('roles-grid');g.innerHTML='';
+  (d.roles||[]).forEach(r=>{const c=r.color;const el=document.createElement('div');el.className='role-card';el.style.borderTop=`4px solid var(--${c})`;
+  const resp=(r.responsibilities||[]).map(x=>`<li>${x}</li>`).join('');const rights=(r.rights||[]).map(x=>`<li>${x}</li>`).join('');
+  el.innerHTML=`<div class="role-top"><div class="role-icon bg-${c}"><span class="material-icons color-${c}" aria-hidden="true">${r.icon}</span></div><div class="role-title">${r.title}</div></div><div class="role-body"><p class="role-desc">${r.description}</p><div class="role-section"><h4>Responsibilities</h4><ul>${resp}</ul></div><div class="role-section"><h4>Rights</h4><ul>${rights}</ul></div></div>`;
+  g.appendChild(el);});}catch(e){console.error(e);}
+}
+
+async function loadGlossary(){
+  try{const d=await(await fetch('/api/glossary')).json();glossary=d.terms||[];buildAlpha();renderGlossary(glossary);}catch(e){console.error(e);}
+}
+function buildAlpha(){const nav=document.getElementById('alpha-nav');nav.innerHTML='';'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(l=>{const b=document.createElement('button');b.className='alpha-btn';b.textContent=l;b.setAttribute('aria-label','Jump to '+l);b.onclick=()=>{const el=document.getElementById('letter-'+l);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});};nav.appendChild(b);});}
+function renderGlossary(terms){const list=document.getElementById('glossary-list');list.innerHTML='';let cur='';terms.forEach(t=>{const f=t.term[0].toUpperCase();if(f!==cur){cur=f;const h=document.createElement('div');h.className='letter-header';h.id='letter-'+f;h.textContent=f;list.appendChild(h);}const a=document.createElement('article');a.className='glossary-term';a.innerHTML=`<dl><dt>${t.term}</dt><dd>${t.definition}</dd></dl>`;list.appendChild(a);});}
+function filterGlossary(q){if(!q.trim()){renderGlossary(glossary);return;}const ql=q.toLowerCase();renderGlossary(glossary.filter(t=>t.term.toLowerCase().includes(ql)||t.definition.toLowerCase().includes(ql)));}
+
+async function loadQuiz(){
+  try{const d=await(await fetch('/api/quiz')).json();quizQ=d.questions||[];qIdx=0;score=0;answered=false;
+  document.getElementById('quiz-results').style.display='none';document.getElementById('quiz-container').style.display='';renderQ(0);}catch(e){console.error(e);}
+}
+function renderQ(i){const q=quizQ[i];if(!q)return;answered=false;const tot=quizQ.length;
+  document.getElementById('q-label').textContent=`Question ${i+1} of ${tot}`;document.getElementById('score-label').textContent=`Score: ${score}`;
+  const fill=document.getElementById('progress-fill');fill.style.width=Math.round((i/tot)*100)+'%';fill.setAttribute('aria-valuenow',i);
+  const opts=q.options.map((o,j)=>`<button class="q-opt" role="radio" aria-checked="false" onclick="selectAns(${q.id},${j},this)">${o}</button>`).join('');
+  document.getElementById('quiz-container').innerHTML=`<div class="q-card"><p class="q-text">${i+1}. ${q.question}</p><div class="q-options">${opts}</div><div class="explanation" id="exp-${q.id}"></div><button class="btn-next" id="next-btn" onclick="nextQ()" aria-label="Next question">${i+1<tot?'Next Question':'See Results'} →</button></div>`;
+}
+async function selectAns(qId,ans,btn){
+  if(answered)return;answered=true;
+  document.querySelectorAll('.q-opt').forEach(b=>{b.disabled=true;b.setAttribute('aria-checked','false');});
+  try{const d=await(await fetch('/api/quiz/check',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question_id:qId,answer:ans})})).json();
+  btn.setAttribute('aria-checked','true');
+  if(d.correct){btn.classList.add('correct');score++;}else{btn.classList.add('wrong');const opts=document.querySelectorAll('.q-opt');if(opts[d.correct_answer])opts[d.correct_answer].classList.add('correct');}
+  const exp=document.getElementById('exp-'+qId);exp.textContent=d.explanation;exp.classList.add('open');
+  document.getElementById('score-label').textContent=`Score: ${score}`;document.getElementById('next-btn').style.display='block';}catch(e){console.error(e);}
+}
+function nextQ(){qIdx++;if(qIdx<quizQ.length)renderQ(qIdx);else showResults();}
+function showResults(){
+  document.getElementById('quiz-container').style.display='none';
+  const fill=document.getElementById('progress-fill');fill.style.width='100%';fill.setAttribute('aria-valuenow',quizQ.length);
+  const [em,msg]=score>=8?['🏆','Election Expert! Outstanding knowledge!']:score>=5?['👍','Good Understanding! Keep exploring.']:['📚','Keep Learning — check the Stages tab!'];
+  const res=document.getElementById('quiz-results');
+  res.innerHTML=`<div class="score-big">${score} / ${quizQ.length}</div><p class="score-msg">${em} ${msg}</p><button class="btn-retry" onclick="openModal()" style="margin-right:8px">🏆 Save to Leaderboard</button><button class="btn-retry" style="background:var(--card);border:1px solid var(--border);color:var(--text)" onclick="loadQuiz()">Try Again</button>`;
+  res.style.display='block';lastScore=score;track('quiz_done',{score,total:quizQ.length});
+}
+
+async function loadLeaderboard(){
+  const c=document.getElementById('lb-container');if(!c)return;
+  if(!_db){c.innerHTML='<p class="lb-empty">Firebase not connected.</p>';return;}
+  c.innerHTML='<p class="lb-loading">Loading...</p>';
+  try{const {collection,query,orderBy,limit,getDocs}=_fb;
+  const snap=await getDocs(query(collection(_db,'quiz_scores'),orderBy('score','desc'),orderBy('created_at','desc'),limit(10)));
+  if(snap.empty){c.innerHTML='<p class="lb-empty">No scores yet — be the first! Complete the quiz and save your score.</p>';return;}
+  const medals=['🥇','🥈','🥉'];let rows='';
+  snap.docs.forEach((doc,i)=>{const d=doc.data();rows+=`<tr><td class="lb-rank ${['gold','silver','bronze'][i]||''}">${medals[i]||i+1}</td><td>${esc(d.player_name||'Anonymous')}</td><td><span class="lb-pill">${d.score}/${d.total}</span></td><td style="color:var(--text-muted);font-size:.8rem">${d.percentage||0}%</td></tr>`;});
+  c.innerHTML=`<table class="lb-table"><thead><tr><th>#</th><th>Player</th><th>Score</th><th>%</th></tr></thead><tbody>${rows}</tbody></table>`;}catch(e){c.innerHTML='<p class="lb-empty">Could not load scores.</p>';console.error(e);}
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function openModal(){document.getElementById('score-modal').classList.add('open');document.getElementById('modal-name').focus();}
+function closeScoreModal(){document.getElementById('score-modal').classList.remove('open');}
+async function submitScore(){
+  const name=document.getElementById('modal-name').value.trim();if(!name){document.getElementById('modal-name').focus();return;}
+  const btn=document.getElementById('modal-save-btn');btn.disabled=true;btn.textContent='Saving...';
+  try{await fetch('/api/quiz/score',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({player_name:name,score:lastScore,total:quizQ.length})});}
+  catch(e){if(_db){const{collection,addDoc,serverTimestamp}=_fb;await addDoc(collection(_db,'quiz_scores'),{player_name:name,score:lastScore,total:quizQ.length,percentage:Math.round(lastScore/quizQ.length*100),created_at:serverTimestamp()});}}
+  closeScoreModal();switchTab('leaderboard');btn.disabled=false;btn.textContent='Save Score';
+}
+
+async function restoreChat(){
+  if(!_db)return;
+  try{const{collection,query,orderBy,limit,getDocs}=_fb;
+  const snap=await getDocs(query(collection(_db,'chat_sessions',sid,'messages'),orderBy('ts','asc'),limit(10)));
+  snap.docs.forEach(doc=>{const d=doc.data();addMsg(d.role,d.text,false);});}catch(e){console.error(e);}
+}
+async function saveMsg(role,text){
+  if(!_db)return;
+  try{const{collection,addDoc,serverTimestamp}=_fb;await addDoc(collection(_db,'chat_sessions',sid,'messages'),{role,text,ts:serverTimestamp()});}catch(e){}
+}
+
+async function sendMessage(){
+  const inp=document.getElementById('chat-input');const msg=inp.value.trim();if(!msg)return;
+  inp.value='';document.getElementById('send-btn').disabled=true;inp.disabled=true;
+  addMsg('user',msg);saveMsg('user',msg);showTyping();document.getElementById('stage-chip').style.display='none';
+  try{const d=await(await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,language:lang})})).json();
+  hideTyping();addMsg('ai',d.response);saveMsg('ai',d.response);if(d.suggested_stage)showChip(d.suggested_stage);}
+  catch(e){hideTyping();addMsg('ai','⚠️ Connection error. Please try again.');}
+  document.getElementById('send-btn').disabled=false;inp.disabled=false;inp.focus();
+}
+function addMsg(role,text,save=true){
+  const box=document.getElementById('chat-messages');const div=document.createElement('div');div.className='msg '+(role==='ai'?'msg-ai':'msg-user');
+  const t=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  div.innerHTML=`<div class="msg-text">${text.replace(/\n/g,'<br>')}</div><div class="msg-meta">${role==='ai'?'🗳️ VoteGuide':'You'} · ${t}</div>`;
+  box.appendChild(div);box.scrollTop=box.scrollHeight;
+}
+function showTyping(){document.getElementById('typing-indicator').classList.add('show');document.getElementById('chat-messages').scrollTop=99999;}
+function hideTyping(){document.getElementById('typing-indicator').classList.remove('show');}
+function showChip(id){const s=stages.find(x=>x.id===id);if(!s)return;const c=document.getElementById('stage-chip');c.style.display='block';c.textContent=`📍 Learn more → ${s.name}`;c.onclick=()=>hlStage(id);c.onkeydown=e=>{if(e.key==='Enter'||e.key===' ')hlStage(id);};}
+function hlStage(id){switchTab('stages');setTimeout(()=>{const c=document.querySelector(`[data-stage-id="${id}"]`);if(c){c.scrollIntoView({behavior:'smooth',block:'center'});c.classList.add('highlighted');setTimeout(()=>c.classList.remove('highlighted'),3000);}},100);}
+function updateLang(code){lang=code;document.getElementById('lang-indicator').textContent='Responding in: '+(LN[code]||'English');}
+async function track(ev,p={}){if(!_db)return;try{const{collection,addDoc,serverTimestamp}=_fb;await addDoc(collection(_db,'analytics'),{event:ev,session:sid,...p,ts:serverTimestamp()});}catch(e){}}
+
+document.getElementById('lang-select').addEventListener('change',function(){updateLang(this.value);});
+document.getElementById('chat-input').addEventListener('keydown',function(e){if(e.ctrlKey&&e.key==='Enter')sendMessage();});
+document.getElementById('score-modal').addEventListener('click',function(e){if(e.target===this)closeScoreModal();});
+window.addEventListener('load',initApp);
+</script>
+</body>
+</html>

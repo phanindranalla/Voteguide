@@ -1,0 +1,146 @@
+{
+  "stages": [
+    {
+      "id": 1,
+      "name": "Election Announcement",
+      "icon": "campaign",
+      "duration": "1-7 days",
+      "description": "The governing authority officially declares that an election will be held. Key dates are published including nomination deadlines, voting day, and when results will be declared.",
+      "key_actions": [
+        "Official gazette notification published",
+        "Election dates announced to the public",
+        "Election commission activates"
+      ],
+      "who_is_involved": ["Election Commission", "Government"],
+      "citizen_action": "Stay informed — follow official announcements for key dates in your area."
+    },
+    {
+      "id": 2,
+      "name": "Voter Registration",
+      "icon": "how_to_reg",
+      "duration": "2-8 weeks",
+      "description": "Citizens who wish to vote must register with the election authority. This establishes the official voter roll used on election day.",
+      "key_actions": [
+        "Citizens submit registration applications",
+        "Voter rolls are verified and updated",
+        "Voter ID cards or confirmation issued"
+      ],
+      "who_is_involved": ["Citizens", "Election Commission"],
+      "citizen_action": "Check if you are registered. If not, register before the deadline using official government portals."
+    },
+    {
+      "id": 3,
+      "name": "Candidate Nomination",
+      "icon": "person_add",
+      "duration": "1-2 weeks",
+      "description": "Individuals or political parties formally file their intention to contest the election. Nominations are reviewed for eligibility.",
+      "key_actions": [
+        "Nomination forms submitted with required documents",
+        "Eligibility verification by election authority",
+        "Final list of candidates published"
+      ],
+      "who_is_involved": [
+        "Candidates",
+        "Political Parties",
+        "Election Commission"
+      ],
+      "citizen_action": "Review the list of candidates in your constituency once published."
+    },
+    {
+      "id": 4,
+      "name": "Election Campaign",
+      "icon": "record_voice_over",
+      "duration": "2-6 weeks",
+      "description": "Candidates and parties present their policies and platforms to voters through rallies, media, and outreach. Campaign spending is regulated.",
+      "key_actions": [
+        "Candidates hold public rallies and debates",
+        "Campaign materials distributed",
+        "Media advertising begins",
+        "Campaign finance rules enforced"
+      ],
+      "who_is_involved": [
+        "Candidates",
+        "Political Parties",
+        "Media",
+        "Citizens"
+      ],
+      "citizen_action": "Attend debates, read manifesto documents, and critically evaluate candidate promises."
+    },
+    {
+      "id": 5,
+      "name": "Voting Day",
+      "icon": "how_to_vote",
+      "duration": "1 day (polls open 6-12 hours)",
+      "description": "Registered voters visit polling stations to cast their ballots. The process is overseen by election officials and independent observers to ensure fairness.",
+      "key_actions": [
+        "Polling stations open at designated time",
+        "Voters present ID and cast secret ballots",
+        "Observers monitor for irregularities",
+        "Polls close and ballot boxes sealed"
+      ],
+      "who_is_involved": [
+        "Voters",
+        "Polling Officers",
+        "Observers",
+        "Security Personnel"
+      ],
+      "citizen_action": "Bring valid voter ID, go to your assigned polling station, and cast your vote. Your vote is secret."
+    },
+    {
+      "id": 6,
+      "name": "Vote Counting",
+      "icon": "calculate",
+      "duration": "Hours to days",
+      "description": "Sealed ballot boxes are opened and votes tallied under strict supervision. Representatives of candidates are present to observe the count.",
+      "key_actions": [
+        "Ballot boxes transported to counting centers",
+        "Votes counted under observation",
+        "Tallies verified and cross-checked",
+        "Preliminary results compiled"
+      ],
+      "who_is_involved": [
+        "Election Officials",
+        "Candidate Agents",
+        "Observers"
+      ],
+      "citizen_action": "Follow live result updates through official election commission channels."
+    },
+    {
+      "id": 7,
+      "name": "Result Declaration",
+      "icon": "emoji_events",
+      "duration": "1-3 days",
+      "description": "The election authority officially declares the winners after verifying all counts. Results are published in the official gazette.",
+      "key_actions": [
+        "Final vote tallies certified",
+        "Winners officially declared",
+        "Results published officially",
+        "Losers may file legal challenges if evidence exists"
+      ],
+      "who_is_involved": [
+        "Election Commission",
+        "Candidates",
+        "Courts"
+      ],
+      "citizen_action": "Review official results. Understand your right to petition if you believe there were irregularities."
+    },
+    {
+      "id": 8,
+      "name": "Transition of Power",
+      "icon": "handshake",
+      "duration": "Days to weeks",
+      "description": "The winning candidate or party is sworn in and assumes their official duties. The outgoing authority hands over responsibilities in an orderly manner.",
+      "key_actions": [
+        "Winner takes oath of office",
+        "Outgoing officials brief incoming team",
+        "New government or official begins duties"
+      ],
+      "who_is_involved": [
+        "Incoming Officials",
+        "Outgoing Officials",
+        "Judiciary"
+      ],
+      "citizen_action": "Engage with your newly elected representative. Democracy continues between elections."
+    }
+  ]
+}

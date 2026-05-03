@@ -1,0 +1,124 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the first stage of the election process?",
+      "options": [
+        "Voting Day",
+        "Candidate Nomination",
+        "Election Announcement",
+        "Vote Counting"
+      ],
+      "correct": 2,
+      "explanation": "The Election Announcement is when the governing authority officially declares that an election will be held and publishes key dates."
+    },
+    {
+      "id": 2,
+      "question": "What does secret ballot mean?",
+      "options": [
+        "Only candidates can see your vote",
+        "Your vote is private and confidential",
+        "You vote in secret without registering",
+        "Results are kept secret for 24 hours"
+      ],
+      "correct": 1,
+      "explanation": "A secret ballot means your voting choice is confidential. No one can see how you voted."
+    },
+    {
+      "id": 3,
+      "question": "Who is responsible for ensuring an election is free and fair?",
+      "options": [
+        "The winning candidate",
+        "The outgoing government",
+        "The Election Commission",
+        "International media"
+      ],
+      "correct": 2,
+      "explanation": "The Election Commission is an independent body specifically tasked with administering and supervising elections."
+    },
+    {
+      "id": 4,
+      "question": "What is a manifesto?",
+      "options": [
+        "A list of registered voters",
+        "A legal challenge to election results",
+        "A public declaration of a party's policies and promises",
+        "The official result announcement document"
+      ],
+      "correct": 2,
+      "explanation": "A manifesto is a document published by a political party outlining their plans, policies, and promises if they win."
+    },
+    {
+      "id": 5,
+      "question": "What is voter turnout?",
+      "options": [
+        "The number of candidates in an election",
+        "The time polls close on voting day",
+        "The percentage of eligible voters who voted",
+        "The margin of victory between candidates"
+      ],
+      "correct": 2,
+      "explanation": "Voter turnout is the percentage of eligible registered voters who actually cast a ballot."
+    },
+    {
+      "id": 6,
+      "question": "What happens during Transition of Power?",
+      "options": [
+        "Votes are counted and verified",
+        "Candidates file their nominations",
+        "The winner is sworn in and takes office",
+        "The election date is announced"
+      ],
+      "correct": 2,
+      "explanation": "During Transition of Power the winning candidate takes the oath of office and the outgoing authority hands over responsibilities."
+    },
+    {
+      "id": 7,
+      "question": "What is gerrymandering?",
+      "options": [
+        "A type of voting system",
+        "Manipulating district boundaries to favor one party",
+        "A form of election observation",
+        "The process of counting postal votes"
+      ],
+      "correct": 1,
+      "explanation": "Gerrymandering is the manipulation of electoral district boundaries to give one political party an unfair advantage."
+    },
+    {
+      "id": 8,
+      "question": "Who can be an Election Observer?",
+      "options": [
+        "Only government officials",
+        "Only the losing candidates",
+        "Independent monitors approved to watch the election process",
+        "Only international organizations"
+      ],
+      "correct": 2,
+      "explanation": "Election observers are independent monitors from civil society, international organizations, or approved non-partisan groups."
+    },
+    {
+      "id": 9,
+      "question": "What is a by-election?",
+      "options": [
+        "An election held before the scheduled date",
+        "An election held to fill a vacancy outside the regular cycle",
+        "A second round of voting when no one wins",
+        "An election for local councils only"
+      ],
+      "correct": 1,
+      "explanation": "A by-election is held outside the regular schedule, typically to fill a vacancy caused by death or resignation of an official."
+    },
+    {
+      "id": 10,
+      "question": "What does proportional representation mean?",
+      "options": [
+        "Each candidate gets equal media coverage",
+        "The candidate with most votes always wins",
+        "Seats are allocated based on each party's share of total votes",
+        "Voters rank candidates in order of preference"
+      ],
+      "correct": 2,
+      "explanation": "In proportional representation, parties receive seats proportional to the percentage of votes they receive."
+    }
+  ]
+}
